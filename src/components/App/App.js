@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Container, StyledButton } from './App.styled';
-import { SearchBar } from './SearchBar/SearchBar.jsx';
-import { ImageGallery } from './ImageGallery/ImageGallery.jsx';
-import { getImage } from './api/service';
-import { Modal } from './Modal/Modal.jsx';
+import { Container, StyledButton } from 'components/App/App.styled';
+import { SearchBar } from 'components/SearchBar/SearchBar.jsx';
+import { ImageGallery } from 'components/ImageGallery/ImageGallery.jsx';
+import { getImage } from 'api/service';
+import { Modal } from 'components/Modal/Modal.jsx';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import Loader from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
