@@ -16,14 +16,11 @@ export const Modal = ({ modalImage, alt, toggleModal }) => {
     }
   };
   useEffect(() => {
-    // console.log('addEventListener');
     window.addEventListener('keydown', escapeEvent);
     return () => {
-      // console.log('removeEventListener');
       window.removeEventListener('keydown', escapeEvent);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   return createPortal(
     <StyledOverlay onClick={onBackdropClick}>
@@ -37,5 +34,5 @@ export const Modal = ({ modalImage, alt, toggleModal }) => {
 Modal.propTypes = {
   modalImage: PropTypes.string,
   alt: PropTypes.string,
-  toggleModal: PropTypes.bool,
+  toggleModal: PropTypes.func,
 };

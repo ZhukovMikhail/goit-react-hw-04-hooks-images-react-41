@@ -25,7 +25,6 @@ export const SearchBar = ({ onQuery }) => {
     if (searchQuery.trim() === '') {
       return notify();
     }
-    console.log('SearchBar-query:', searchQuery);
     onQuery(searchQuery);
   };
 
@@ -51,5 +50,5 @@ export const SearchBar = ({ onQuery }) => {
 };
 
 SearchBar.propTypes = {
-  onQuery: PropTypes.string,
+  onQuery: PropTypes.func,
 };

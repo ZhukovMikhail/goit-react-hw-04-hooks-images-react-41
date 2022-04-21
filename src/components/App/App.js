@@ -10,6 +10,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PropTypes from 'prop-types';
 
+const per_page = 10;
+
 export const App = () => {
   const [query, setQuery] = useState('');
   const [images, setImages] = useState([]);
@@ -20,16 +22,15 @@ export const App = () => {
   const [largeImg, setlargeImg] = useState('');
   const [totalHits, setTotalHits] = useState(0);
   const refContainer = useRef(1);
+
   const onSetQuery = searchQuery => {
     if (searchQuery === query) {
-      console.log('searchQuery === query');
       return;
     }
-    console.log('searchQuery !== query');
     setQuery(searchQuery);
     setPage(1);
   };
-  const per_page = 10;
+
   const notify = () =>
     toast.error('No images found', {
       position: 'top-center',
@@ -39,6 +40,7 @@ export const App = () => {
       pauseOnHover: false,
       draggable: true,
     });
+
   const toggleModal = () => {
     setModalIsOpen(prev => !prev);
   };
@@ -57,8 +59,6 @@ export const App = () => {
   };
 
   useEffect(() => {
-    console.log('useEffect');
-
     if (refContainer.current === 1) {
       refContainer.current += 1;
       return;
@@ -84,6 +84,7 @@ export const App = () => {
   }, [page, query]);
 
   const loadMoreIsNeeded = totalHits > page * per_page ? true : false;
+
   return (
     <>
       <SearchBar onQuery={onSetQuery} />
@@ -117,6 +118,7 @@ export const App = () => {
     </>
   );
 };
+
 App.propTypes = {
   query: PropTypes.string,
   images: PropTypes.array,
