@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { Container, StyledButton } from 'components/App/App.styled';
+import { Container, StyledButton, StyledText } from 'components/App/App.styled';
 import { SearchBar } from 'components/SearchBar/SearchBar.jsx';
 import { ImageGallery } from 'components/ImageGallery/ImageGallery.jsx';
 import { getImage } from 'api/service';
 import { Modal } from 'components/Modal/Modal.jsx';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import Loader from 'react-loader-spinner';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import { errorNotify } from 'utils/utils';
 import 'react-toastify/dist/ReactToastify.css';
 import PropTypes from 'prop-types';
 
@@ -30,16 +31,6 @@ export const App = () => {
     setQuery(searchQuery);
     setPage(1);
   };
-
-  const notify = () =>
-    toast.error('No images found', {
-      position: 'top-center',
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-    });
 
   const toggleModal = () => {
     setModalIsOpen(prev => !prev);
@@ -72,7 +63,7 @@ export const App = () => {
           }
           return [...state, ...r.hits];
         });
-        r.totalHits === 0 && notify();
+        r.totalHits === 0 && errorNotify();
         setTotalHits(r.totalHits);
       })
       .catch(e => {
@@ -90,7 +81,7 @@ export const App = () => {
       <SearchBar onQuery={onSetQuery} />
       <Container>
         <ToastContainer />
-        {error && <h4>...Oops, something goes wrong!</h4>}
+        {error && <StyledText>...Oops, something goes wrong!</StyledText>}
         <ImageGallery click={onImageClick} images={images} />
         {isLoading && (
           <>
@@ -101,11 +92,14 @@ export const App = () => {
               color="#3f51b5"
               ariaLabel="loading"
             />
-            <h3>...loading</h3>
+            <StyledText>...loading</StyledText>
           </>
         )}
-        {images.length !== 0 && loadMoreIsNeeded && (
+        {totalHits !== 0 && loadMoreIsNeeded && (
           <StyledButton onClick={loadMore}>load More</StyledButton>
+        )}
+        {images.length !== 0 && !loadMoreIsNeeded && (
+          <StyledText> You have riched the end of image list </StyledText>
         )}
         {modalIsOpen && (
           <Modal

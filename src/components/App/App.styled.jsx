@@ -33,3 +33,10 @@ export const StyledButton = styled.button`
     background-color: #303f9f;
   }
 `;
+export const StyledText = styled.p`
+  margin-top: 15px;
+  color: #303f9f;
+  font-size: 24px;
+  font-weight: 700;
+  font-style: italic;
+`;
