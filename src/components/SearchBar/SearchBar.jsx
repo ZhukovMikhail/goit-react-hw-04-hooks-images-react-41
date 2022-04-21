@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyledSearchBar, StyledForm } from './SearchBar.styled';
 import { ImSearch } from 'react-icons/im';
+import PropTypes from 'prop-types';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -25,7 +26,6 @@ export const SearchBar = ({ onQuery }) => {
       return notify();
     }
     console.log('SearchBar-query:', searchQuery);
-
     onQuery(searchQuery);
   };
 
@@ -48,4 +48,8 @@ export const SearchBar = ({ onQuery }) => {
       </StyledForm>
     </StyledSearchBar>
   );
+};
+
+SearchBar.propTypes = {
+  onQuery: PropTypes.string,
 };

@@ -1,6 +1,7 @@
 import { StyledOverlay, StyledModal } from './Modal.styled';
 import { createPortal } from 'react-dom';
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 const modalRoot = document.querySelector('#modal-root');
 
 export const Modal = ({ modalImage, alt, toggleModal }) => {
@@ -32,4 +33,9 @@ export const Modal = ({ modalImage, alt, toggleModal }) => {
     </StyledOverlay>,
     modalRoot,
   );
+};
+Modal.propTypes = {
+  modalImage: PropTypes.string,
+  alt: PropTypes.string,
+  toggleModal: PropTypes.bool,
 };

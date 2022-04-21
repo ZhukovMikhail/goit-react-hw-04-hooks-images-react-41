@@ -8,6 +8,7 @@ import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import Loader from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PropTypes from 'prop-types';
 
 export const App = () => {
   const [query, setQuery] = useState('');
@@ -18,8 +19,17 @@ export const App = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [largeImg, setlargeImg] = useState('');
   const [totalHits, setTotalHits] = useState(0);
-  const per_page = 10;
   const refContainer = useRef(1);
+  const onSetQuery = searchQuery => {
+    if (searchQuery === query) {
+      console.log('searchQuery === query');
+      return;
+    }
+    console.log('searchQuery !== query');
+    setQuery(searchQuery);
+    setPage(1);
+  };
+  const per_page = 10;
   const notify = () =>
     toast.error('No images found', {
       position: 'top-center',
@@ -39,75 +49,44 @@ export const App = () => {
       toggleModal();
     }
   };
-
-  const fetchImage = async searchQuery => {
-    console.log(
-      '---fetchImage()---',
-      'refContainer:',
-      refContainer,
-      'fetchImage-query:',
-      searchQuery,
-    );
-    if (searchQuery === query) {
-      return;
-    } else {
-      setPage(1);
-      setQuery(searchQuery);
-    }
-    try {
-      setIsLoading(true);
-      const data = await getImage(searchQuery, page, per_page);
-      setQuery(searchQuery);
-      setImages(data.hits);
-      setTotalHits(data.totalHits);
-      setError(false);
-      data.totalHits === 0 && notify();
-      console.log('fetchImage-images.length', data.hits.length);
-    } catch (error) {
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   const loadMore = () => {
     if (query === null) {
       return;
     }
     setPage(state => state + 1);
   };
+
   useEffect(() => {
-    console.log('useEffect-query:', query);
+    console.log('useEffect');
+
     if (refContainer.current === 1) {
       refContainer.current += 1;
       return;
     }
-    // if (page === 1) {
-    //   return;
-    // }
-    refContainer.current += 1;
     setIsLoading(true);
-    try {
-      console.log('---useEffect + fetch---', 'refContainer:', refContainer);
-      getImage(query, page, per_page).then(r => {
-        setImages(state => [...state, ...r.hits]);
+    getImage(query, page, per_page)
+      .then(r => {
+        setImages(state => {
+          if (page === 1) {
+            return r.hits;
+          }
+          return [...state, ...r.hits];
+        });
+        r.totalHits === 0 && notify();
         setTotalHits(r.totalHits);
-        console.log('useEffect-images.length', r.hits.length);
+        setIsLoading(false);
+      })
+      .catch(e => {
+        setImages([]);
+        setError(e);
+        setIsLoading(false);
       });
-    } catch (error) {
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-    // return () => {
-    //   getImage();
-    // };
-  }, [page]);
+  }, [page, query]);
 
   const loadMoreIsNeeded = totalHits > page * per_page ? true : false;
-  // console.log('loadMoreIsNeeded', loadMoreIsNeeded);
   return (
     <>
-      <SearchBar onQuery={fetchImage} />
+      <SearchBar onQuery={onSetQuery} />
       <Container>
         <ToastContainer />
         {error && <h4>...Oops, something goes wrong!</h4>}
@@ -135,7 +114,17 @@ export const App = () => {
           ></Modal>
         )}
       </Container>
-      {console.log(refContainer)}
     </>
   );
+};
+App.propTypes = {
+  query: PropTypes.string,
+  images: PropTypes.array,
+  page: PropTypes.number,
+  isLoading: PropTypes.bool,
+  error: PropTypes.bool,
+  modalIsOpen: PropTypes.bool,
+  largeImg: PropTypes.string,
+  totalHits: PropTypes.number,
+  searchQuery: PropTypes.string,
 };
