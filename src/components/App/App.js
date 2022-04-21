@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Container, StyledButton } from 'components/App/App.styled';
 import { SearchBar } from 'components/SearchBar/SearchBar.jsx';
 import { ImageGallery } from 'components/ImageGallery/ImageGallery.jsx';
@@ -9,19 +9,18 @@ import Loader from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export class App extends Component {
-  state = {
-    query: '',
-    images: [],
-    page: 1,
-    per_page: 10,
-    isLoading: false,
-    error: false,
-    modalIsOpen: false,
-    largeImg: '',
-    totalHits: 0,
-  };
-  notify = () =>
+export const App = () => {
+  const [query, setQuery] = useState('');
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [largeImg, setlargeImg] = useState('');
+  const [totalHits, setTotalHits] = useState(0);
+  const per_page = 10;
+  const refContainer = useRef(1);
+  const notify = () =>
     toast.error('No images found', {
       position: 'top-center',
       autoClose: 1000,
@@ -30,111 +29,113 @@ export class App extends Component {
       pauseOnHover: false,
       draggable: true,
     });
-  toggleModal = () => {
-    this.setState(prev => ({
-      modalIsOpen: !prev.modalIsOpen,
-    }));
+  const toggleModal = () => {
+    setModalIsOpen(prev => !prev);
   };
 
-  onImageClick = e => {
+  const onImageClick = e => {
     if (e.target.nodeName === 'IMG') {
-      this.setState({ largeImg: e.target.dataset.src });
-      this.toggleModal();
+      setlargeImg(e.target.dataset.src);
+      toggleModal();
     }
   };
 
-  fetchImage = async query => {
-    if (query === this.state.query) {
+  const fetchImage = async searchQuery => {
+    console.log(
+      '---fetchImage()---',
+      'refContainer:',
+      refContainer,
+      'fetchImage-query:',
+      searchQuery,
+    );
+    if (searchQuery === query) {
       return;
     } else {
-      this.setState({ images: [], page: 1 });
+      setPage(1);
+      setQuery(searchQuery);
     }
-    const page = this.state.page;
-    const per_page = this.state.per_page;
     try {
-      this.setState({ isLoading: true });
-      const data = await getImage(query, page, per_page);
-      this.setState({
-        query: query,
-        images: data.hits,
-        totalHits: data.totalHits,
-        error: false,
-      });
-      this.state.totalHits === 0 && this.notify();
+      setIsLoading(true);
+      const data = await getImage(searchQuery, page, per_page);
+      setQuery(searchQuery);
+      setImages(data.hits);
+      setTotalHits(data.totalHits);
+      setError(false);
+      data.totalHits === 0 && notify();
+      console.log('fetchImage-images.length', data.hits.length);
     } catch (error) {
-      this.setState({ error });
+      setError(error);
     } finally {
-      console.log('finally');
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
   };
-  loadMore = () => {
-    if (this.state.query === '') {
+  const loadMore = () => {
+    if (query === null) {
       return;
     }
-    this.setState(prev => ({
-      page: prev.page + 1,
-    }));
+    setPage(state => state + 1);
   };
-  async componentDidUpdate(_, prevState) {
-    if (prevState.page !== this.state.page) {
-      try {
-        this.setState({ isLoading: true });
-        const data = await getImage(
-          this.state.query,
-          this.state.page,
-          this.state.per_page,
-        );
-        this.setState(prev => ({
-          images: [...prev.images, ...data.hits],
-          totalHits: data.totalHits,
-        }));
-      } catch (error) {
-        console.log(error);
-        this.setState({ error: error });
-      } finally {
-        console.log('finally');
-        this.setState({ isLoading: false });
-      }
+  useEffect(() => {
+    console.log('useEffect-query:', query);
+    if (refContainer.current === 1) {
+      refContainer.current += 1;
+      return;
     }
-  }
-  render() {
-    const loadMoreIsNeeded =
-      this.state.totalHits > this.state.page * this.state.per_page
-        ? true
-        : false;
-    // console.log('loadMoreIsNeeded', loadMoreIsNeeded);
-    return (
-      <>
-        <SearchBar query={this.fetchImage} />
-        <Container>
-          <ToastContainer />
-          {this.state.error && <h4>...Oops, something goes wrong!</h4>}
-          <ImageGallery click={this.onImageClick} images={this.state.images} />
-          {this.state.isLoading && (
-            <>
-              <Loader
-                type="Bars"
-                height="100"
-                width="100"
-                color="#3f51b5"
-                ariaLabel="loading"
-              />
-              <h3>...loading</h3>
-            </>
-          )}
-          {this.state.images.length !== 0 && loadMoreIsNeeded && (
-            <StyledButton onClick={this.loadMore}>load More</StyledButton>
-          )}
-          {this.state.modalIsOpen && (
-            <Modal
-              toggleModal={this.toggleModal}
-              modalImage={this.state.largeImg}
-              alt={this.state.query}
-            ></Modal>
-          )}
-        </Container>
-      </>
-    );
-  }
-}
+    // if (page === 1) {
+    //   return;
+    // }
+    refContainer.current += 1;
+    setIsLoading(true);
+    try {
+      console.log('---useEffect + fetch---', 'refContainer:', refContainer);
+      getImage(query, page, per_page).then(r => {
+        setImages(state => [...state, ...r.hits]);
+        setTotalHits(r.totalHits);
+        console.log('useEffect-images.length', r.hits.length);
+      });
+    } catch (error) {
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+    // return () => {
+    //   getImage();
+    // };
+  }, [page]);
+
+  const loadMoreIsNeeded = totalHits > page * per_page ? true : false;
+  // console.log('loadMoreIsNeeded', loadMoreIsNeeded);
+  return (
+    <>
+      <SearchBar onQuery={fetchImage} />
+      <Container>
+        <ToastContainer />
+        {error && <h4>...Oops, something goes wrong!</h4>}
+        <ImageGallery click={onImageClick} images={images} />
+        {isLoading && (
+          <>
+            <Loader
+              type="Bars"
+              height="100"
+              width="100"
+              color="#3f51b5"
+              ariaLabel="loading"
+            />
+            <h3>...loading</h3>
+          </>
+        )}
+        {images.length !== 0 && loadMoreIsNeeded && (
+          <StyledButton onClick={loadMore}>load More</StyledButton>
+        )}
+        {modalIsOpen && (
+          <Modal
+            toggleModal={toggleModal}
+            modalImage={largeImg}
+            alt={query}
+          ></Modal>
+        )}
+      </Container>
+      {console.log(refContainer)}
+    </>
+  );
+};

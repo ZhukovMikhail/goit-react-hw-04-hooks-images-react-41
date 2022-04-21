@@ -1,34 +1,35 @@
 import { StyledOverlay, StyledModal } from './Modal.styled';
 import { createPortal } from 'react-dom';
-import { Component } from 'react';
+import { useEffect } from 'react';
 const modalRoot = document.querySelector('#modal-root');
 
-export class Modal extends Component {
-  escapeEvent = e => {
+export const Modal = ({ modalImage, alt, toggleModal }) => {
+  const escapeEvent = e => {
     if (e.code === 'Escape') {
-      this.props.toggleModal();
+      toggleModal();
     }
   };
-  onBackdropClick = e => {
+  const onBackdropClick = e => {
     if (e.currentTarget === e.target) {
-      this.props.toggleModal();
+      toggleModal();
     }
   };
-  componentDidMount() {
-    window.addEventListener('keydown', this.escapeEvent);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.escapeEvent);
-  }
+  useEffect(() => {
+    // console.log('addEventListener');
+    window.addEventListener('keydown', escapeEvent);
+    return () => {
+      // console.log('removeEventListener');
+      window.removeEventListener('keydown', escapeEvent);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  render() {
-    return createPortal(
-      <StyledOverlay onClick={this.onBackdropClick}>
-        <StyledModal>
-          <img src={this.props.modalImage} alt={this.props.alt} />
-        </StyledModal>
-      </StyledOverlay>,
-      modalRoot,
-    );
-  }
-}
+  return createPortal(
+    <StyledOverlay onClick={onBackdropClick}>
+      <StyledModal>
+        <img src={modalImage} alt={alt} />
+      </StyledModal>
+    </StyledOverlay>,
+    modalRoot,
+  );
+};
