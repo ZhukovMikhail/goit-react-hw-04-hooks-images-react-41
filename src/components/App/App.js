@@ -79,6 +79,12 @@ export const App = () => {
   return (
     <>
       <SearchBar onQuery={onSetQuery} />
+      {images.length !== 0 && (
+        <StyledText>
+          <h4>{`We found ${totalHits} images`}</h4>
+        </StyledText>
+      )}
+
       <Container>
         <ToastContainer />
         {error && <StyledText>...Oops, something goes wrong!</StyledText>}
