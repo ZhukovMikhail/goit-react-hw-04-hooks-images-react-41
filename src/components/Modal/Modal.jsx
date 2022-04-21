@@ -5,22 +5,22 @@ import PropTypes from 'prop-types';
 const modalRoot = document.querySelector('#modal-root');
 
 export const Modal = ({ modalImage, alt, toggleModal }) => {
-  const escapeEvent = e => {
-    if (e.code === 'Escape') {
-      toggleModal();
-    }
-  };
   const onBackdropClick = e => {
     if (e.currentTarget === e.target) {
       toggleModal();
     }
   };
   useEffect(() => {
+    const escapeEvent = e => {
+      if (e.code === 'Escape') {
+        toggleModal();
+      }
+    };
     window.addEventListener('keydown', escapeEvent);
     return () => {
       window.removeEventListener('keydown', escapeEvent);
     };
-  });
+  }, [toggleModal]);
 
   return createPortal(
     <StyledOverlay onClick={onBackdropClick}>

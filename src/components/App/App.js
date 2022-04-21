@@ -74,13 +74,13 @@ export const App = () => {
         });
         r.totalHits === 0 && notify();
         setTotalHits(r.totalHits);
-        setIsLoading(false);
       })
       .catch(e => {
         setImages([]);
         setError(e);
         setIsLoading(false);
-      });
+      })
+      .finally(() => setIsLoading(false));
   }, [page, query]);
 
   const loadMoreIsNeeded = totalHits > page * per_page ? true : false;
