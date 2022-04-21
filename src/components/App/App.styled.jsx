@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 export const Container = styled.div`
   margin: 1vw;
-  margin-top: 10px;
+  margin-top: 100px;
   width: 98vw;
   display: flex;
   flex-direction: column;
@@ -40,7 +40,8 @@ export const StyledText = styled.p`
   font-weight: 700;
   font-style: italic;
   & h4 {
-    margin-top: 90px;
+    position: relative;
+    top: 85px;
     text-align: center;
   }
 `;
