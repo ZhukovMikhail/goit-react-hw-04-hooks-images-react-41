@@ -63,4 +63,5 @@ export const SearchBar = ({ onQuery, onOption }) => {
 
 SearchBar.propTypes = {
   onQuery: PropTypes.func,
+  onOption: PropTypes.func,
 };

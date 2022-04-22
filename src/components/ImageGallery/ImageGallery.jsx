@@ -13,4 +13,5 @@ export const ImageGallery = ({ images, click, onKeyEnter }) => {
 ImageGallery.propTypes = {
   images: PropTypes.array,
   click: PropTypes.func,
+  onKeyEnter: PropTypes.func,
 };
