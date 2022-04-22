@@ -61,6 +61,7 @@ export const App = () => {
       return;
     }
     setIsLoading(true);
+    setError(false);
     getImage(query, page, per_page)
       .then(r => {
         setImages(state => {
