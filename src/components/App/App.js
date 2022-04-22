@@ -41,6 +41,13 @@ export const App = () => {
       toggleModal();
     }
   };
+  const onKeyEnter = e => {
+    if (e.target.nodeName === 'IMG' && e.code === 'Enter') {
+      setlargeImg(e.target.dataset.src);
+      toggleModal();
+    }
+  };
+
   const loadMore = () => {
     if (query === null) {
       return;
@@ -87,7 +94,11 @@ export const App = () => {
       <Container>
         <ToastContainer />
         {error && <StyledText>...Oops, something goes wrong!</StyledText>}
-        <ImageGallery click={onImageClick} images={images} />
+        <ImageGallery
+          click={onImageClick}
+          images={images}
+          onKeyEnter={onKeyEnter}
+        />
         {isLoading && (
           <>
             <Loader
