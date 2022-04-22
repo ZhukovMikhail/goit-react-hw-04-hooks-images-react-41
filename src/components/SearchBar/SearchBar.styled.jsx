@@ -67,5 +67,9 @@ export const Label = styled.label`
   & select {
     margin-left: 10px;
     font-size: 15px;
+    width: 40px;
+    text-align: center;
+    border-radius: 4px;
+    border: none;
   }
 `;
