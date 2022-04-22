@@ -11,12 +11,11 @@ import { errorNotify } from 'utils/utils';
 import 'react-toastify/dist/ReactToastify.css';
 import PropTypes from 'prop-types';
 
-const per_page = 10;
-
 export const App = () => {
   const [query, setQuery] = useState('');
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
+  const [per_page, setPer_page] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -72,16 +71,16 @@ export const App = () => {
         setIsLoading(false);
       })
       .finally(() => setIsLoading(false));
-  }, [page, query]);
+  }, [page, per_page, query]);
 
   const loadMoreIsNeeded = totalHits > page * per_page ? true : false;
 
   return (
     <>
-      <SearchBar onQuery={onSetQuery} />
+      <SearchBar onQuery={onSetQuery} onOption={setPer_page} />
       {images.length !== 0 && (
         <StyledText>
-          <h4>{`We found ${totalHits} images`}</h4>
+          <p>{`We found ${totalHits} images`}</p>
         </StyledText>
       )}
 

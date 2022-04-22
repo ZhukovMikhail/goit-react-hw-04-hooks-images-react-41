@@ -60,3 +60,12 @@ export const StyledForm = styled.form`
     }
   }
 `;
+export const Label = styled.label`
+  font-size: 20px;
+  margin-left: 10px;
+
+  & select {
+    margin-left: 10px;
+    font-size: 15px;
+  }
+`;
